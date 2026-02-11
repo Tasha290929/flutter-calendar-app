@@ -26,7 +26,7 @@ class _AddTaskPageState extends State<AddTaskCreate> {
 
   int _selectedRemind = 5;
   List<int> remindList = [5, 10, 15, 20, 25];
-  String _selectedRepead = 'None';
+  String _selectedRepeat = 'None';
   List<String> repeatList = ['None', 'Daily', 'Weekly', 'Monthly'];
 
   int _selectedColor = 0;
@@ -130,7 +130,7 @@ class _AddTaskPageState extends State<AddTaskCreate> {
               ),
               InputField(
                   title: 'Repeat',
-                  hint: _selectedRepead,
+                  hint: _selectedRepeat,
                 widget: Row(
                   children: [
                     DropdownButton(
@@ -154,7 +154,7 @@ class _AddTaskPageState extends State<AddTaskCreate> {
                       // style: subTitleStyle,
                       onChanged: (String? newValue){
                         setState(() {
-                          _selectedRepead = newValue!;
+                          _selectedRepeat = newValue!;
                         });
                       },
                     ),
@@ -227,7 +227,7 @@ class _AddTaskPageState extends State<AddTaskCreate> {
           endTime: _endTime,
           color: _selectedColor,
           remind: _selectedRemind,
-          repeat: _selectedRepead,
+          repeat: _selectedRepeat,
         ),
       );
       print('Value: $value');
@@ -249,6 +249,47 @@ class _AddTaskPageState extends State<AddTaskCreate> {
     } else {
       print('Please select correct date');
     }
+  }
+
+  Column _colorPalette() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Color',
+        ),
+        const SizedBox(height: 8,),
+        Wrap(
+          children: List<Widget>.generate(
+            3,
+              (index) => GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedColor = index;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8, bottom: 8),
+                  child: CircleAvatar(
+                    backgroundColor: index == 0
+                    ? Colors.blue
+                    : index == 1
+                    ? Colors.pinkAccent
+                    : Colors.cyanAccent,
+                    radius: 14,
+                    child: _selectedColor == index
+                    ? const Icon(
+                      Icons.done,
+                      size: 16,
+                      color: Colors.white,
+                    ) : null,
+                  ),
+                ),
+              )
+          ),
+        )
+      ],
+    );
   }
 
   _getTimeFromUser({required bool isStartTime}) async {
