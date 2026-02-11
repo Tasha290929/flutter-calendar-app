@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'SelectionModeScreen.dart';
+import 'helpers/db_helper.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DBHelper.init();
   runApp(const MyApp());
 }
 

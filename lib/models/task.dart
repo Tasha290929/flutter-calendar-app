@@ -9,7 +9,7 @@ class Task {
   String? endTime;
   int? color;
   int? remind;
-  int? repeat;
+  String? repeat;
 
   Task({
     this.id,
