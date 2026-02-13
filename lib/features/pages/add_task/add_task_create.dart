@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:test_project/features/ui/input_field.dart';
 import '../../core/controllers/task_controller.dart';
 import '../../models/task.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../ui/button.dart';
+import '../widgets/button.dart';
+import '../widgets/input_field.dart';
 
 class AddTaskCreate extends StatefulWidget {
   const AddTaskCreate({Key? key}) : super(key: key);
