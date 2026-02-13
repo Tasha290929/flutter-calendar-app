@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../times_model.dart';
 import 'CustomCalendarView.dart';
-import 'times_model.dart';
 
 class SelectionModeScreen extends StatelessWidget {
   const SelectionModeScreen({super.key});

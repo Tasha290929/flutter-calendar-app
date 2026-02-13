@@ -69,7 +69,6 @@ class AppTextStyles {
     fontSize: 14,
     height: 20 / 14,
     letterSpacing: 0.25,
-    color: AppColors.darkViolet,
   );
 
   static const smallText = TextStyle(

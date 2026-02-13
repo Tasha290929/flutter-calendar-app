@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'SelectionModeScreen.dart';
+import 'features/pages/add_task/add_task_create.dart';
+import 'features/pages/calendar/SelectionModeScreen.dart';
 import 'helpers/db_helper.dart';
 
 Future<void> main() async {
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const SelectionModeScreen(),
+      home: const AddTaskCreate(),
     );
   }
 }
