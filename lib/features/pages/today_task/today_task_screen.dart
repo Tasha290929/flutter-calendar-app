@@ -1,10 +1,18 @@
+import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:intl/intl.dart';
 import 'package:test_project/core/controllers/task_controller.dart';
+import 'package:test_project/core/services/theme_services.dart';
+import 'package:test_project/features/pages/add_task/add_task_create.dart';
 import 'package:test_project/features/ui/size_config.dart';
 import 'package:test_project/styles/app_styles.dart';
+
+import '../../widgets/button.dart';
 
 class TodayTaskScreen extends StatefulWidget {
   const TodayTaskScreen({Key? key}) : super(key: key);
@@ -35,12 +43,181 @@ class _TodayTaskScreen extends State<TodayTaskScreen> {
     );
   }
 
-  AppBar _customAppBar(){
+  AppBar _customAppBar() {
     return AppBar(
       leading: IconButton(
-          onPressed: onPressed,
-          icon: icon
+        onPressed: () {
+          ThemeServices().switchTheme();
+        },
+        icon: Icon(
+          Get.isDarkMode ? Icons.sunny : Icons.dark_mode,
+          size: 24,
+          color: Get.isDarkMode ? Colors.white : AppColors.lightGreyLavender,
+        ),
       ),
-    )
+      elevation: 0,
+      backgroundColor: AppColors.background,
+    );
+  }
+
+  _addTaskBar() {
+    return Container(
+      margin: const EdgeInsets.only(left: 20, right: 10, top: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                DateFormat.yMMMMd().format(DateTime.now()),
+                // style: subHeadingStyle,
+              ),
+              Text(
+                'Today',
+                // style: subHeadingStyle,
+              ),
+            ],
+          ),
+          MyButton(
+            label: '+ Add Task',
+            onTap: () async {
+              await Get.to(() => const AddTaskCreate());
+              _taskController.getTasks();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  _addDateBar() {
+    return Container(
+      margin: const EdgeInsets.only(left: 20, right: 10, top: 10),
+      child: DatePicker(
+        DateTime.now(),
+        width: 80,
+        height: 100,
+        initialSelectedDate: _selectedDate,
+        selectedTextColor: AppColors.white,
+        selectionColor: AppColors.lightGreyLavender,
+        dateTextStyle: AppTextStyles.headingSection,
+        dayTextStyle: AppTextStyles.bodyMedium,
+        monthTextStyle: AppTextStyles.headingCards,
+        onDateChange: (newDate) {
+          setState(() {
+            _selectedDate = newDate;
+          });
+        },
+      ),
+    );
+  }
+
+  Future<void> _onRefresh() async {
+    _taskController.getTasks();
+  }
+
+  _showTasks() {
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: SizeConfig.orientation == Orientation.landscape
+            ? Axis.horizontal
+            : Axis.vertical,
+        itemBuilder: (BuildContext context, int index) {
+          var task = _taskController.taskList[index];
+
+          if (task.repeat == 'Daily' ||
+              task.date == DateFormat.yMd().format(_selectedDate) ||
+              (task.repeat == 'Weekly' &&
+                  _selectedDate
+                              .difference(DateFormat.yMd().parse(task.date!))
+                              .inDays %
+                          7 ==
+                      0) ||
+              (task.repeat == 'Monthly' &&
+                  DateFormat.yMd().parse(task.date!).day ==
+                      _selectedDate.day)) {
+            try {
+              var date = DateFormat.jm().parse(task.startTime!);
+              var myTime = DateFormat('HH:mm').format(date);
+
+              /*notifyHelper.scheduledNotification(
+                    int.parse(myTime.toString().split(':')[0]),
+                    int.parse(myTime.toString().split(':')[1]),
+                    task,
+                ),*/
+            } catch (e) {
+              print('Error parsing time: $e');
+            }
+          } else {
+            Container();
+          }
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(microseconds: 1375),
+            child: SlideAnimation(
+              horizontalOffset: 300,
+              child: FadeInAnimation(
+                child: FadeInAnimation(
+                  child: GestureDetector(
+                    onTap: () => _showBottomSheet(context, task),
+                    child: TaskTitle(task),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+        itemCount: _taskController.taskList.length,
+      ),
+    );
+  }
+
+
+  _noTaskMsg(){
+    return Stack(
+      children: [
+        AnimatedPositioned(
+          duration: const Duration(microseconds: 500),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              direction: SizeConfig.orientation == Orientation.landscape
+              ? Axis.horizontal
+              : Axis.vertical,
+              children: [
+                SizeConfig.orientation == Orientation.landscape
+                ? const SizedBox(
+                  height: 6,
+                )
+                    :const SizedBox(
+                  height: 220,
+                ),
+                Icon(
+                  Icons.list_alt_outlined,
+                  color: AppColors.violet.withOpacity(0.5),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 30, vertical: 10),
+                  child: Text(
+                    'You do not have any tasks yet!\nAdd new tasks to make your days productive.',
+                    style: AppTextStyles.basicText,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizeConfig.orientation == Orientation.landscape
+                    ? const SizedBox(
+                  height: 120,
+                )
+                    : const SizedBox(
+                  height: 180,
+                ),
+              ],
+            ),
+
+        ),
+      ],
+    );
   }
 }
