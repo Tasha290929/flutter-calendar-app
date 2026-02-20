@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_project/features/pages/today_task/today_task_screen.dart';
 import 'features/pages/add_task/add_task_create.dart';
 import 'features/pages/calendar/SelectionModeScreen.dart';
 import 'helpers/db_helper.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const AddTaskCreate(),
+      home: const TodayTaskScreen(),
     );
   }
 }

@@ -12,7 +12,9 @@ import 'package:test_project/features/pages/add_task/add_task_create.dart';
 import 'package:test_project/features/ui/size_config.dart';
 import 'package:test_project/styles/app_styles.dart';
 
+import '../../../models/task.dart';
 import '../../widgets/button.dart';
+import '../../widgets/task_tile.dart';
 
 class TodayTaskScreen extends StatefulWidget {
   const TodayTaskScreen({Key? key}) : super(key: key);
@@ -173,51 +175,133 @@ class _TodayTaskScreen extends State<TodayTaskScreen> {
     );
   }
 
-
-  _noTaskMsg(){
+  _noTaskMsg() {
     return Stack(
       children: [
         AnimatedPositioned(
           duration: const Duration(microseconds: 500),
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              direction: SizeConfig.orientation == Orientation.landscape
-              ? Axis.horizontal
-              : Axis.vertical,
-              children: [
-                SizeConfig.orientation == Orientation.landscape
-                ? const SizedBox(
-                  height: 6,
-                )
-                    :const SizedBox(
-                  height: 220,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            direction: SizeConfig.orientation == Orientation.landscape
+                ? Axis.horizontal
+                : Axis.vertical,
+            children: [
+              SizeConfig.orientation == Orientation.landscape
+                  ? const SizedBox(height: 6)
+                  : const SizedBox(height: 220),
+              Icon(
+                Icons.list_alt_outlined,
+                color: AppColors.violet.withOpacity(0.5),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 10,
                 ),
-                Icon(
-                  Icons.list_alt_outlined,
-                  color: AppColors.violet.withOpacity(0.5),
+                child: Text(
+                  'You do not have any tasks yet!\nAdd new tasks to make your days productive.',
+                  style: AppTextStyles.basicText,
+                  textAlign: TextAlign.center,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 30, vertical: 10),
-                  child: Text(
-                    'You do not have any tasks yet!\nAdd new tasks to make your days productive.',
-                    style: AppTextStyles.basicText,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SizeConfig.orientation == Orientation.landscape
-                    ? const SizedBox(
-                  height: 120,
-                )
-                    : const SizedBox(
-                  height: 180,
-                ),
-              ],
-            ),
-
+              ),
+              SizeConfig.orientation == Orientation.landscape
+                  ? const SizedBox(height: 120)
+                  : const SizedBox(height: 180),
+            ],
+          ),
         ),
       ],
+    );
+  }
+
+  _showBottomSheet(BuildContext context, Task task) {
+    Get.bottomSheet(
+      SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.only(top: 4),
+          width: SizeConfig.screenWidth,
+          height: (SizeConfig.orientation == Orientation.landscape)
+              ? (task.isCompleted == 1
+                    ? SizeConfig.screenHeight * 0.6
+                    : SizeConfig.screenHeight * 0.8)
+              : (task.isCompleted == 1
+                    ? SizeConfig.screenHeight * 0.30
+                    : SizeConfig.screenHeight * 0.39),
+          color: AppColors.lightGreyLavender,
+          child: Column(
+            children: [
+              Flexible(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              task.isCompleted == 1
+                  ? Container()
+                  : _buildBottomSheet(
+                      lable: 'Task complet',
+                      onTap: () {
+                        _taskController.markTaskAsCompleted(task.id!);
+                        Get.back();
+                      },
+                      clr: AppColors.dullLavender,
+                    ),
+              _buildBottomSheet(
+                lable: 'Delete Task',
+                onTap: () {
+                  _taskController.deleteTasks(task);
+                  Get.back();
+                },
+                clr: Colors.red[300]!,
+              ),
+              Divider(
+                color: Get.isDarkMode
+                    ? Colors.grey
+                    : AppColors.lightGreyLavender,
+              ),
+              _buildBottomSheet(
+                lable: 'Cancel',
+                onTap: () {
+                  Get.back();
+                },
+                clr: AppColors.violet,
+              ),
+              const SizedBox(height: 5),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _buildBottomSheet({
+    required String lable,
+    required Function() onTap,
+    required Color clr,
+    bool isClose = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 2,
+            color: isClose
+                ? Get.isDarkMode
+                      ? Colors.grey[600]!
+                      : Colors.grey[300]!
+                : clr,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          color: isClose ? Colors.transparent : clr,
+        ),
+        child: Center(child: Text(lable)),
+      ),
     );
   }
 }

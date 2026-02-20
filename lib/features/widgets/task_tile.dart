@@ -4,8 +4,8 @@ import 'package:test_project/features/ui/size_config.dart';
 import 'package:test_project/models/task.dart';
 import 'package:test_project/styles/app_styles.dart';
 
-class TaskTile extends StatelessWidget{
-  const TaskTile(this.task, {Key? key}) : super(key: key);
+class TaskTitle extends StatelessWidget{
+  const TaskTitle(this.task, {Key? key}) : super(key: key);
   final Task task;
 
   @override
